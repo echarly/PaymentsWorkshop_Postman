@@ -1,0 +1,1194 @@
+{
+	"info": {
+		"_postman_id": "19f00427-8859-4b3e-9277-a91bb2073431",
+		"name": "PaymentWorkshop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "NegativeScenarios",
+			"item": [
+				{
+					"name": "1. Create payment - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"ErrorMsg\",response.errors[0].detail);\r",
+									"var ErrorMsg = pm.environment.get(\"paymentId\");\r",
+									"\r",
+									"pm.test(\"Error Message\", function () {\r",
+									"if (ErrorMsg === \"Accept partial authorization not valid for autocomplete payments.\") {\r",
+									"    console.log(\"Error message is the same.\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"source_id\": \"CASH\",\r\n    \"idempotency_key\": \"bc4aa552-fee9-447f-b156-4e20d7055265\",\r\n    \"amount_money\": {\r\n      \"amount\": 100,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"cash_details\": {\r\n      \"buyer_supplied_money\": {\r\n        \"amount\": 100,\r\n        \"currency\": \"USD\"\r\n      }\r\n    },\r\n    \"accept_partial_authorization\": true\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/payments",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get a Specific Payment - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"const actualErrorMsg = pm.environment.set(\"cancelErrorMsg\",response.errors[0].detail);\r",
+									"const ErrorMsg = \"Could not find payment with id: \" + pm.globals.get(\"wrongPayment\");\r",
+									"const actualErrorMsg2 = pm.environment.get(\"cancelErrorMsg\");\r",
+									"\r",
+									"console.log(\"Concatenated error message: \" + ErrorMsg);\r",
+									"console.log(\"Actual Error message: \" + actualErrorMsg2);\r",
+									"\r",
+									"pm.test(\"Error Message\", function () {\r",
+									"if (ErrorMsg === actualErrorMsg2) {\r",
+									"    console.log(\"Error messages are the same: \" + ErrorMsg);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/payments/{{wrongPayment}}",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"{{wrongPayment}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get All Payments - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([404]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/payment",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"payment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Update a Payment - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"const actualErrorMsg = pm.environment.set(\"cancelErrorMsg\",response.errors[0].detail);\r",
+									"const ErrorMsg = \"Could not find payment with id: \" + pm.globals.get(\"wrongPayment\");\r",
+									"const actualErrorMsg2 = pm.environment.get(\"cancelErrorMsg\");\r",
+									"\r",
+									"console.log(\"Concatenated error message: \" + ErrorMsg);\r",
+									"console.log(\"Actual Error message: \" + actualErrorMsg2);\r",
+									"\r",
+									"pm.test(\"Error Message\", function () {\r",
+									"if (ErrorMsg === actualErrorMsg2) {\r",
+									"}});\r",
+									"\r",
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([404]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idempotency_key\": \"a596710c-07e1-46ca-8713-d3f02a3e2947\",\r\n    \"payment\": {\r\n      \"tip_money\": {\r\n        \"amount\": 1,\r\n        \"currency\": \"USD\"\r\n      },\r\n      \"amount_money\": {\r\n        \"amount\": 2,\r\n        \"currency\": \"USD\"\r\n      }\r\n    }\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/payments/{{wrongPayment}}",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"{{wrongPayment}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Cancel a Payment - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"const actualErrorMsg = pm.environment.set(\"cancelErrorMsg\",response.errors[0].detail);\r",
+									"const ErrorMsg = \"Could not find payment with id: \" + pm.globals.get(\"wrongPayment\");\r",
+									"const actualErrorMsg2 = pm.environment.get(\"cancelErrorMsg\");\r",
+									"\r",
+									"console.log(\"Concatenated error message: \" + ErrorMsg);\r",
+									"console.log(\"Actual Error message: \" + actualErrorMsg2);\r",
+									"\r",
+									"pm.test(\"Error Message\", function () {\r",
+									"if (ErrorMsg === actualErrorMsg2) {\r",
+									"    console.log(\"Error messages are the same: \" + ErrorMsg);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/payments/{{wrongPayment}}/cancel",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"{{wrongPayment}}",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Complete a Payment - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"const actualErrorMsg = pm.environment.set(\"cancelErrorMsg\",response.errors[0].detail);\r",
+									"const ErrorMsg = \"Could not find payment with id: \" + pm.globals.get(\"wrongPayment\");\r",
+									"const actualErrorMsg2 = pm.environment.get(\"cancelErrorMsg\");\r",
+									"\r",
+									"console.log(\"Concatenated error message: \" + ErrorMsg);\r",
+									"console.log(\"Actual Error message: \" + actualErrorMsg2);\r",
+									"\r",
+									"pm.test(\"Error Message\", function () {\r",
+									"if (ErrorMsg === actualErrorMsg2) {\r",
+									"    console.log(\"Error messages are the same: \" + ErrorMsg);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/payments/{{wrongPayment}}/complete",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"payments",
+								"{{wrongPayment}}",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. Refund a Payment - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"refundTooHigh\",response.errors[0].code);\r",
+									"\r",
+									"const refundTooHigh = pm.environment.get(\"refundTooHigh\");\r",
+									"\r",
+									"pm.test(\"Amount Too Hig\", function () {\r",
+									"if (refundTooHigh === \"AMOUNT_TOO_HIGH\") {\r",
+									"    console.log(\"Error code: \" + refundTooHigh);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//----------------------------\r",
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 200]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount_money\": {\r\n      \"amount\": 101,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"idempotency_key\": \"61e150b5-ed22-46b1-b14c-7870baa46067\",\r\n    \"payment_id\": \"XPEBMwiMWHoCqGa1mkGqOU46fUQZY\",\r\n    \"reason\": \"reas\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/refunds",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"refunds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8. Get Payment Refund - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"const actualErrorMsg = pm.environment.set(\"cancelErrorMsg\",response.errors[0].detail);\r",
+									"const ErrorMsg = \"Invalid refund_id: \" + pm.globals.get(\"wrongPayment\");\r",
+									"const actualErrorMsg2 = pm.environment.get(\"cancelErrorMsg\");\r",
+									"\r",
+									"console.log(\"Concatenated error message: \" + ErrorMsg);\r",
+									"console.log(\"Actual Error message: \" + actualErrorMsg2);\r",
+									"\r",
+									"pm.test(\"Error Message\", function () {\r",
+									"if (ErrorMsg === actualErrorMsg2) {\r",
+									"    console.log(\"Error messages are the same: \" + ErrorMsg);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idempotency_key\": \"b25c1f42-ae3d-4fcb-a1c9-c8cf813c8c14\",\r\n    \"payment_id\": \"{{wrongPayment}}\",\r\n    \"amount_money\": {\r\n      \"amount\": 5,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"app_fee_money\": {\r\n      \"amount\": 2,\r\n      \"currency\": \"USD\"\r\n    }\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/refunds/{{wrongPayment}}",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"refunds",
+								"{{wrongPayment}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "9. List All Payment Refunds - Negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"notFound\",response.errors[0].code);\r",
+									"\r",
+									"const notFound = pm.environment.get(\"notFound\");\r",
+									"\r",
+									"pm.test(\"Amount Too Hig\", function () {\r",
+									"if (notFound === \"NOT_FOUND\") {\r",
+									"    console.log(\"Error code: \" + notFound);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//Response Time\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"//Status Code\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([404]);\r",
+									"});\r",
+									"\r",
+									"//Json Schema\r",
+									"pm.test(\"JSON Schema\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://connect.squareupsandbox.com/v2/refund",
+							"protocol": "https",
+							"host": [
+								"connect",
+								"squareupsandbox",
+								"com"
+							],
+							"path": [
+								"v2",
+								"refund"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Create Payments",
+					"item": [
+						{
+							"name": "1. Create payment - Cash",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"postman.setEnvironmentVariable(\"paymentId\",response.payment.id);\r",
+											"\r",
+											"pm.test(\"amount_money | amount, currency\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"100\");\r",
+											"    pm.expect(pm.response.text()).to.include(\"USD\");\r",
+											"});\r",
+											"\r",
+											"//Response Time\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amount_money\": {\r\n      \"amount\": 3,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"idempotency_key\": \"{{randomNumber}}\",\r\n    \"source_id\": \"CASH\",\r\n    \"accept_partial_authorization\": false,\r\n    \"autocomplete\": false,\r\n    \"cash_details\": {\r\n      \"buyer_supplied_money\": {\r\n        \"amount\": 4,\r\n        \"currency\": \"USD\"\r\n      }\r\n    }\r\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v2/payments",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1. Create payment - AppFee",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"postman.setEnvironmentVariable(\"paymentId\",response.payment.id);\r",
+											"\r",
+											"pm.test(\"amount_money | amount, currency\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"USD\");\r",
+											"});\r",
+											"\r",
+											"//Response Time\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"app_fee_money\": {\r\n      \"amount\": 2,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"amount_money\": {\r\n      \"amount\": 5,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"idempotency_key\": \"{{randomNumber}}\",\r\n    \"accept_partial_authorization\": true,\r\n    \"autocomplete\": false,\r\n    \"source_id\": \"cnon:card-nonce-ok\"\r\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v2/payments",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update Payments",
+					"item": [
+						{
+							"name": "4. Update a Payment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"amountMoney\",response.payment.amount_money.amount);\r",
+											"pm.environment.set(\"tipMoney\",response.payment.tip_money.amount);\r",
+											"pm.environment.set(\"totalMoney\",response.payment.total_money.amount);\r",
+											"\r",
+											"const amountMoney = pm.environment.get(\"amountMoney\");\r",
+											"const tipMoney = pm.environment.get(\"tipMoney\");\r",
+											"const totalMoney = pm.environment.get(\"totalMoney\");\r",
+											"\r",
+											"const sum = amountMoney + tipMoney\r",
+											"\r",
+											"pm.test(\"Amount\", function () {\r",
+											"if (sum === totalMoney) {\r",
+											"    console.log(\"Money is equal: \" + totalMoney);\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"console.log(amountMoney)\r",
+											"console.log(tipMoney)\r",
+											"console.log(totalMoney)\r",
+											"\r",
+											"//Response Time\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"idempotency_key\": \"{{randomNumber}}\",\r\n    \"payment\": {\r\n      \"tip_money\": {\r\n        \"amount\": 1,\r\n        \"currency\": \"USD\"\r\n      },\r\n      \"amount_money\": {\r\n        \"amount\": 2,\r\n        \"currency\": \"USD\"\r\n      }\r\n    }\r\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v2/payments/{{paymentId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments",
+										"{{paymentId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Payments",
+					"item": [
+						{
+							"name": "2. Get a Specific Payment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"paymentId\",response.payment.id);\r",
+											"var paymentId = pm.environment.get(\"paymentId\");\r",
+											"\r",
+											"pm.test(\"Payment ID same as URL\", function () {\r",
+											"if (response.payment.id === paymentId) {\r",
+											"    console.log(\"ID is same\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"//---------------------\r",
+											"//Response Time\r",
+											"pm.test(\"Response time less: 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"HTTP 200 - OK Status\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/v2/payments/{{paymentId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments",
+										"{{paymentId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3. Get All Payments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"paymentId\",response.payments.id);\r",
+											"var paymentId = pm.environment.get(\"paymentId\");\r",
+											"\r",
+											"//---------------------\r",
+											"//Response Time\r",
+											"pm.test(\"Response time less: 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"HTTP 200 - OK Status\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/v2/payments",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Cancel Payments",
+					"item": [
+						{
+							"name": "5. Cancel a Payment",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/v2/payments/{{paymentId}}/cancel",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments",
+										"{{paymentId}}",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Complete Payments",
+					"item": [
+						{
+							"name": "6. Complete a Payment",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/v2/payments/{{paymentId}}/complete",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"payments",
+										"{{paymentId}}",
+										"complete"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Refunds",
+			"item": [
+				{
+					"name": "Refund Payment",
+					"item": [
+						{
+							"name": "7. Refund a Payment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"refundId\",response.refund.id);\r",
+											"pm.environment.set(\"createdAtDate\",response.refund.created_at.split(\"T\")[0]);\r",
+											"\r",
+											"const createdAt = pm.environment.get(\"createdAtDate\");\r",
+											"const time = pm.globals.get(\"today\");\r",
+											"\r",
+											"console.log(\"Todays Date is: \" + time);\r",
+											"console.log(\"Created Date is: \" + createdAt);\r",
+											"\r",
+											"pm.test(\"Same Dates\", function () {\r",
+											"if (createdAt === time) {\r",
+											"    console.log(\"Date comparison is: \" + time);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const moment = require(\"moment\");\r",
+											"const time = pm.globals.set(\"today\", moment().format(\"YYYY-MM-DD\"));\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"idempotency_key\": \"26545780-a143-4f1e-8fad-e0f418bc898e\",\r\n    \"payment_id\": \"XPEBMwiMWHoCqGa1mkGqOU46fUQZY\",\r\n    \"reason\": \"reas\",\r\n    \"amount_money\": {\r\n      \"amount\": 100,\r\n      \"currency\": \"USD\"\r\n    }\r\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v2/refunds",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"refunds"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Refunds",
+					"item": [
+						{
+							"name": "8. Get Payment Refund",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"refundId\",response.refund.id);\r",
+											"var paymentId = pm.environment.get(\"refundId\");\r",
+											"\r",
+											"//Response Time\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"idempotency_key\": \"b25c1f42-ae3d-4fcb-a1c9-c8cf813c8c14\",\r\n    \"payment_id\": \"rVqTpxpAT9EFqqRid3kgNJvNweHZY\",\r\n    \"amount_money\": {\r\n      \"amount\": 5,\r\n      \"currency\": \"USD\"\r\n    },\r\n    \"app_fee_money\": {\r\n      \"amount\": 2,\r\n      \"currency\": \"USD\"\r\n    }\r\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/v2/refunds/{{refundId}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"v2",
+										"refunds",
+										"{{refundId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "9. List All Payment Refunds",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var response = JSON.parse(responseBody);\r",
+											"pm.environment.set(\"refundId\",response.refunds[0].id);\r",
+											"var refundId = pm.environment.get(\"refundId\");\r",
+											"\r",
+											"//Response Time\r",
+											"pm.test(\"Response time is less than 200ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+											"});\r",
+											"\r",
+											"//Status Code\r",
+											"pm.test(\"Successful POST request\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);\r",
+											"});\r",
+											"\r",
+											"//Json Schema\r",
+											"pm.test(\"JSON Schema\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://connect.squareupsandbox.com/v2/refunds",
+									"protocol": "https",
+									"host": [
+										"connect",
+										"squareupsandbox",
+										"com"
+									],
+									"path": [
+										"v2",
+										"refunds"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "EAAAEKJwoaDTEgblQWiqPCjjfDvwtRb_AuIWtTz2Cm8B5eBK8S2kkrfFeDrOenTW",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.environment.set(\"randomNumber\", Math.floor(Math.random() * 9999999999));",
+					"const randomNum = pm.environment.get(\"randomNumber\");",
+					"console.log(randomNum);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
